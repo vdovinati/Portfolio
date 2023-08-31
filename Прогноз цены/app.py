@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jun 22 14:47:48 2023
+Created on Wed Aug 30 10:17:10 2023
 
-@author: mixal
+@author: tti
 """
 
 import streamlit as st
@@ -13,50 +13,45 @@ import numpy as np
 import os
 import plotly.express as px
 
-
 st.title('Онлайн оценка стоимости вашего автомобиля')
 st.header('Сколько стоит ваш автомобиль сейчас')
 
-
-dat = pd.read_csv('train.csv')
-#model = pickle.load('model.pickle')
-years = np.unique(dat.year)
-brand = np.unique(dat.make.astype('str'))
-model = np.unique(dat.model.astype('str'))
+test = pd.read_csv('submission(18).csv')
+data = pd.read_csv('train.csv')
+model = pickle.load('cb.pickle')
+years = np.unique(data.year)
+brand = np.unique(data.make.astype('str'))
+model = np.unique(data.model.astype('str'))
 odometer = list(range(1000, 400000, 5000))
-condition = np.unique(dat.condition.astype('str'))
-color = np.unique(dat.color.astype('str'))
-compl = np.unique(dat.interior.astype('str'))
+condition = np.unique(data.condition.astype('str'))
+color = np.unique(data.color.astype('str'))
+compl = np.unique(data.interior.astype('str'))
 
-
-st.sidebar.markdown("## Нам нужны данные для прогноза!")
+st.sidebar.markdown("## Узнай сколько стоит твое авто")
 select_event_2 = st.sidebar.selectbox(
     'Какая марка у вашей машины?', brand.tolist())
 
-select_event = st.sidebar.selectbox(
+select_event3 = st.sidebar.selectbox(
+    'Какая модель у вашей машины?', model.tolist())
+
+select_event_4 = st.sidebar.selectbox(
     'Какой год выпуска у вашей машины?', years.tolist())
 
-select_event_3 = st.sidebar.selectbox(
+select_event_6 = st.sidebar.selectbox(
     'Какой пробег у вашей машины?', odometer)
 
 
-select_event_4 = st.sidebar.selectbox(
+select_event_7 = st.sidebar.selectbox(
     'Какое состояние у вашей машины?', condition)
 
-select_event_5 = st.sidebar.selectbox(
+select_event_8 = st.sidebar.selectbox(
     'Какой цвет у вашей машины?', color)
 
-select_event_6 = st.sidebar.selectbox(
+select_event_9 = st.sidebar.selectbox(
     'Какая комплектация у вашей машины?', compl)
 
-
-# select_event_2 = st.sidebar.selectbox(
-#     'What brand car are you selling?', brand.tolist())
-
-
-
 st.header('Dataset statistics: ' + str(select_event_2))
-datX = dat[dat.make == select_event_2]
+datX = data[data.make == select_event_2]
 datX = datX.dropna()
 st.write(datX.describe())
 
@@ -103,3 +98,12 @@ with st.sidebar:
         st.write('Получите и распишитесь')
     else:
         st.write('Нажмите для прогноза')
+        
+with st.sidebar:
+    upload_files = st.file_uploader("submission(18).csv", accept_multiple_files = True)
+    for upload_file in upload_files:
+        bytes_data = uploaded_file.read()
+        st.write("submission(18).csv",uploaded_file.name)
+        st.write(bytes_data)
+predict = model.predict(bytes_data)
+st.header('Ваш авто будет стоить：', predict)
