@@ -16,7 +16,7 @@ import plotly.express as px
 st.title('Онлайн оценка стоимости вашего автомобиля')
 st.header('Сколько стоит ваш автомобиль сейчас')
 
-test = pd.read_csv('submission(18).csv')
+test = pd.read_csv('test.csv')
 data = pd.read_csv('train.csv')
 model = pickle.load('cb.pickle')
 years = np.unique(data.year)
@@ -100,10 +100,11 @@ with st.sidebar:
         st.write('Нажмите для прогноза')
         
 with st.sidebar:
-    upload_files = st.file_uploader("submission(18).csv", accept_multiple_files = True)
+    upload_files = st.file_uploader("test.csv", accept_multiple_files = True)
     for upload_file in upload_files:
         bytes_data = uploaded_file.read()
-        st.write("submission(18).csv",uploaded_file.name)
+        st.write("test.csv",uploaded_file.name)
         st.write(bytes_data)
-predict = model.predict(bytes_data)
+predict = cb.predict(bytes_data)
 st.header('Ваш авто будет стоить：', predict)
+
